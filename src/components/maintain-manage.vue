@@ -4,9 +4,9 @@
     <div class="top">
       <div class="top-left">
         <el-button class="ghost-button" size="small">养护管理系统</el-button>
-        <el-button class="ghost-button" size="small">养护作业完成率分析</el-button>
-        <el-button class="ghost-button" size="small">养护作业监督情况</el-button>
-        <el-button class="ghost-button" size="small">养护单位养护绿地分析</el-button>
+        <el-button class="ghost-button" size="small" @click="isShowWclfx = true">养护作业完成率分析</el-button>
+        <el-button class="ghost-button" size="small" @click="isShowMonitoring = true">养护作业监督情况</el-button>
+        <el-button class="ghost-button" size="small" @click="isShowYhldfx = true">养护单位养护绿地分析</el-button>
       </div>
       <p>{{currentTime}}</p>
       <!-- 地图图层配置 -->
@@ -47,11 +47,13 @@
         </p>
         <div class="echarts-box">
           <div class="coverage-box">
-            <div class="coverage"></div>
+            <!-- <div class="coverage"></div> -->
+            <el-progress color="#8bc4e3" type="circle" :percentage="80" :stroke-width="12" :width="100" />
             <p class="desc">问题覆盖率</p>
           </div>
           <div class="rectification-box">
-            <div class="rectification"></div>
+            <!-- <div class="rectification"></div> -->
+            <el-progress color="#ea3323" type="circle" :percentage="80" :stroke-width="12" :width="100" />
             <p class="desc">问题整改率</p>
           </div>
         </div>
@@ -115,7 +117,9 @@
 
     <div class="search-box">
     	<el-input
-		    placeholder=""
+    		ref="searchInput"
+    		@keydown.enter.native="isShowResult = true"
+		    placeholder="" 
 		    suffix-icon="el-icon-search"
 		    v-model="input1">
 		  </el-input>
@@ -143,6 +147,27 @@
 			  </el-collapse-item>
 			</el-collapse>
     </div>
+
+    <el-dialog title="查询结果" :visible.sync="isShowResult">
+    	<maintain-manage-result />
+    </el-dialog>
+
+    <el-dialog title="养护作业监督情况" :visible.sync="isShowMonitoring">
+    	<maintain-manage-monitoring />
+    </el-dialog>
+
+    <el-dialog title="各项养护作业完成率分析" :visible.sync="isShowWclfx">
+    	<maintain-manage-wclfx />
+    </el-dialog>
+
+    <el-dialog title="养护单位养护绿地分析" :visible.sync="isShowYhldfx">
+    	<maintain-manage-yhldfx />
+    </el-dialog>
+
+    <el-dialog title="养护绿地信息" :visible.sync="isShowYhldxx" width="500px">
+    	<maintain-manage-yhldxx />
+    </el-dialog>
+
   </div>
 </template>
 
@@ -155,6 +180,17 @@
 	import imageB from '../assets/imageB.png'
 	import imageC from '../assets/imageC.png'
 
+	/* 查询结果 */
+	import MaintainManageResult from './maintain-manage-result.vue'
+	/* 养护作业监督情况 */
+	import MaintainManageMonitoring from './maintain-manage-monitoring.vue'
+	/* 各养护作业完成率分析 */
+	import MaintainManageWclfx from './maintain-manage-wclfx.vue'
+	/* 养护单位养护绿地分析 */
+	import MaintainManageYhldfx from './maintain-manage-yhldfx.vue'
+	/* 养护绿地信息 */
+	import MaintainManageYhldxx from './maintain-manage-yhldxx.vue'
+
 	const layerConfig = [
 		{ label: '2d地图', key: '2d', funcName: 'setMapLayer2d' },
 		{ label: '卫星地图', key: 'satellite', funcName: 'setMapLayerSatellite' }
@@ -162,7 +198,12 @@
 
 	export default {
 		components: {
-			MMap
+			MMap,
+			MaintainManageResult,
+			MaintainManageMonitoring,
+			MaintainManageWclfx,
+			MaintainManageYhldfx,
+			MaintainManageYhldxx
 		},
 		data() {
 			return {
@@ -175,15 +216,30 @@
 					{ label: '待整改问题', img: imageC, checked: false },
 				],
 				activeNames: '1',
-				input1: ''
+				input1: '',
+
+				/* 弹窗 */
+				isShowResult: false,
+				isShowMonitoring: false,
+				isShowWclfx: false,
+				isShowYhldfx: false,
+				isShowYhldxx: false
 			}
 		},
 		mounted() {
-			this.coverageEchart = echarts.init(document.querySelector('.coverage'));
-			this.rectificationEchart = echarts.init(document.querySelector('.rectification'));
+			// this.coverageEchart = echarts.init(document.querySelector('.coverage'));
+			// this.rectificationEchart = echarts.init(document.querySelector('.rectification'));
 
-			this.coverageEchart.setOption(returnRateOptions({ color: '#8bc4e3', textColor: '#abf04b', value: 30 }))
-			this.rectificationEchart.setOption(returnRateOptions({ color: '#ea3323', textColor: '#abf04b', value: 40 }))
+			// this.coverageEchart.setOption(returnRateOptions({ color: '#8bc4e3', textColor: '#abf04b', value: 30 }))
+			// this.rectificationEchart.setOption(returnRateOptions({ color: '#ea3323', textColor: '#abf04b', value: 40 }))
+
+			// document.querySelector('.')
+			this.$refs.searchInput.$el.querySelector('.el-input__suffix').onclick = function() {
+				this.isShowResult = true;
+			}
+			this.$once('hook:beforeDestroy', () => {
+				this.$refs.searchInput.$el.querySelector('.el-input__suffix').onclick = null;
+			})
 		},
 		methods: {
 			layerConfigBindClick(key, funcName) {
@@ -274,6 +330,9 @@
 		position: absolute;
 		top: 60px;
 		left: 310px;
+		.el-input__suffix {
+			cursor: pointer;
+		}
 	}
 }
 
@@ -322,6 +381,13 @@
 		margin-top: 30px;
 		.echarts-box {
 			display: flex;
+			justify-content: space-around;
+			> div {
+				padding: 30px 10px 0px;
+				.el-progress.el-progress--circle {
+					margin-bottom: 10px;
+				}
+			}
 			.rectification, .coverage {
 				width: 150px;
 				height: 150px;
@@ -361,6 +427,39 @@
 	text-align: center;
 }
 .ghost-button {
+}
+
+/deep/ .el-dialog {
+  background-color: rgba(0,0,0,.7);
+  position: relative;
+  .el-dialog__header {
+  	border-top: 2px solid @sysColor;
+    border-bottom: 1px solid #e89f42;
+    padding: 10px 20px;
+
+    .el-dialog__title {
+      color: @sysColor;
+      font-size: 14px;
+    }
+
+    .el-dialog__headerbtn {
+      top: 10px;
+    }
+
+    .el-dialog__close {
+      font-size: 24px;
+    }
+  }
+
+  .el-dialog__body {
+  	min-height: 200px;
+  }
+
+  .additional-box {
+		position: absolute;
+		right: 60px;
+		top: 7px;
+	}
 }
 </style>
 
@@ -402,6 +501,9 @@
 			.el-input__icon.el-icon-search {
 				color: black;
 			}
+			.el-input__suffix {
+				cursor: pointer;
+			}
 		}
 		.el-button {
 			background-color: #e89f42;
@@ -422,7 +524,27 @@
 			}
 		}
 	}
+
+	.el-progress__text {
+		font-size: 25px !important;
+	} 
 }
+</style>
+
+<style lang="less">
+	.maintain-manage {
+		.coverage-box {
+			.el-progress__text {
+				color: #abf04b;
+			}
+		}
+		.rectification-box {
+			.el-progress__text {
+				color: #abf04b;
+			}
+		}
+	}
+
 </style>
 
 
