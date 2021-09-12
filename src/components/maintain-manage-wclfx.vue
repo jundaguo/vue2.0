@@ -1,7 +1,7 @@
 <template>
 	<div class="maintain-manage-wclfx">
 		<div class="additional-box">
-	    <el-select size="small" v-model="month" placeholder="选择月" style="margin-right: 5px;">
+	    <el-select size="small" v-model="month" placeholder="选择月" style="margin-right: 5px;" popper-class="customer-popup">
 		    <el-option
 		      v-for="item in options"
 		      :key="item.value"
@@ -10,7 +10,7 @@
 		    </el-option>
 		  </el-select>
 
-	    <el-select size="small" v-model="business" placeholder="请选择">
+	    <el-select size="small" v-model="business" placeholder="请选择" popper-class="customer-popup">
 		    <el-option
 		      v-for="item in options"
 		      :key="item.value"
@@ -51,7 +51,10 @@
 		data() {
 			return {
 				month: '',
-				options: [],
+				options: [
+					{ label: '1122', value: 2222 },
+					{ label: '3333', value: 3333 },
+				],
 				business: ''
 			}
 		}
@@ -64,21 +67,6 @@
 
 .maintain-manage-wclfx {
 	color: @sysColor;
-	.zyjhlss {
-		display: flex;
-		align-items: center;
-		> span {
-			margin-right: 20px;
-			&:nth-of-type(1) {
-				display: inline-block;
-				width: 120px;
-			}
-		}
-	}
-	.monitor-value {
-		font-size: 30px;
-		color: #7dfb4c;
-	}
 }
 
 .tongji-box {
@@ -103,6 +91,7 @@
 	.el-input__inner {
 		background-color: rgba(74, 163, 164, .6);
 		border-color: @sysColor;
+		color: black;
 		// border: none;
 		width: 150px;
 	}

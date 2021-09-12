@@ -234,7 +234,7 @@
 			// this.rectificationEchart.setOption(returnRateOptions({ color: '#ea3323', textColor: '#abf04b', value: 40 }))
 
 			// document.querySelector('.')
-			this.$refs.searchInput.$el.querySelector('.el-input__suffix').onclick = function() {
+			this.$refs.searchInput.$el.querySelector('.el-input__suffix').onclick = () => {
 				this.isShowResult = true;
 			}
 			this.$once('hook:beforeDestroy', () => {
@@ -532,6 +532,9 @@
 </style>
 
 <style lang="less">
+	@bgColor: rgba(0, 0, 0, 0.7);
+	@sysColor: #4aa3a4;
+
 	.maintain-manage {
 		.coverage-box {
 			.el-progress__text {
@@ -544,6 +547,18 @@
 			}
 		}
 	}
+
+	// .customer-popup.el-select-dropdown {
+	// 	background-color: transparent;
+	// 	border-color: @sysColor;
+	// 	.el-scrollbar {
+	// 		background-color: transparent;
+	// 	  border-color: #4aa3a4;
+	// 	}
+	// 	.el-select-dropdown__item {
+	// 		// background-color: transparent;
+	// 	}
+	// }
 
 </style>
 
